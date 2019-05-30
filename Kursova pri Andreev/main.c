@@ -24,13 +24,13 @@ int main()
         printf("\n1. Check for matchings;");
         printf("\n2. Delete advert by id;");
         printf("\n3. Print all adverts;");
-        printf("\n5. Exit.");
+        printf("\n4. Exit.");
 
         do{
             printf("\n\nEnter your choice: ");
             scanf("%d",&choice);
             while(getchar()!='\n');
-        }while(choice<1 || choice>5);
+        }while(choice<1 || choice>4);
 
         if(choice == 1){
 
@@ -52,16 +52,22 @@ int main()
             }
         }
         if(choice == 3){
-            printAllElements(headReq, headSell);
+            if(headReq != NULL || headSell != NULL){
+                printAllElements(headReq, headSell);
+            }
+            else{
+                printf("\nNo adverts to show\n");
+            }
         }
 
         printf("\n");
-    }while(choice != 5);
+    }while(choice != 4);
 
 
 
     fclose(fp);
     fclose(fp2);
+
     freeList(headReq, headSell);
 
     return 0;
@@ -95,29 +101,8 @@ sList_t *readFromRequestFile(FILE *fp, sList_t *headReq)
             nodeReq->next = temp;
             nodeReq = temp;
             temp = temp->next;
-
-//            nodeReq->next = temp;
-//
-//            fread(&temp->payload, sizeof(sAdvert_t), 1, fp);
-//            printf("\nheadReq = %p\n", headReq);
-//            printf("\nheadReq -> next: %p\n", headReq->next);
-//            printf("\nnode before temp = %p\n", nodeReq);
-//            printf("temp: %p\n", temp);
-//            printf("\nnodeReq->next: %p\n", nodeReq->next);
-//            nodeReq = temp;
-//            printf("\nnode after temp = %p\n", nodeReq);
-//
-//            nodeReq->next = NULL;
         }
-//        printf("\nheadReq = %p\n", headReq);
-//        printf("nodeReq: %p\n", nodeReq);
-//        printf("Type:\t%s", nodeReq->payload.type);
-//        printf("ID:\t%s", nodeReq->payload.id);
-//        printf("Title:\t%s", nodeReq->payload.title);
-//        printf("Price:\t%lf", nodeReq->payload.price);
-//        printf("\n\n");
      }
-
 
      return headReq;
 }
@@ -200,9 +185,6 @@ void deleteAdvert(sList_t *headReq, sList_t *headSell)
     sList_t *prevSell = headSell;
     char id_to_delete[MAX_SIZE];
     int flagReq = 0;
-
-    //strcpy(id_to_delete, prevReq->payload.id);
-
 
     printf("\nEnter the ID of the advert you want to delete: ");
     fflush(stdin);
@@ -293,6 +275,7 @@ void deleteAdvert(sList_t *headReq, sList_t *headSell)
     }
 
 }
+
 void write_req_el(sList_t *headReq)
 {
     FILE *fp = NULL;
@@ -304,12 +287,14 @@ void write_req_el(sList_t *headReq)
     }
 
     for(nodeReq = headReq; nodeReq != NULL; nodeReq = nodeReq->next){
-        if(fwrite(&nodeReq,sizeof(sAdvert_t),1,fp)!=1){
+        if(fwrite(&nodeReq->payload,sizeof(sAdvert_t),1,fp)!=1){
             perror(NULL);
             fclose(fp);
             exit(-1);
         }
     }
+
+    fclose(fp);
 }
 
 void write_sell_el(sList_t *headSell)
@@ -323,12 +308,14 @@ void write_sell_el(sList_t *headSell)
     }
 
     for(nodeSell = headSell; nodeSell != NULL; nodeSell = nodeSell->next){
-        if(fwrite(&nodeSell,sizeof(sAdvert_t),1,fp)!=1){
+        if(fwrite(&nodeSell->payload,sizeof(sAdvert_t),1,fp)!=1){
             perror(NULL);
             fclose(fp);
             exit(-2);
         }
     }
+
+    fclose(fp);
 }
 
 
